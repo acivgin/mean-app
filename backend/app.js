@@ -1,6 +1,21 @@
 const express = require("express");
+const mongoose = require("mongoose");
 
 const app = express();
+
+const Post = require("./models/post");
+
+mongoose
+  .connect(
+    "mongodb+srv://adis:LoqCMMhG6ZVmbViP@cluster0.y2ala.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    { useUnifiedTopology: true, useNewUrlParser: true }
+  )
+  .then(() => {
+    console.log("Connected to database");
+  })
+  .catch(() => {
+    console.log("Connection failed");
+  });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -19,8 +34,11 @@ app.use((req, res, next) => {
 });
 
 app.post("/api/posts", (req, res, next) => {
-  const post = req.body;
+  const post = new Post({ title: req.body.title, content: req.body.content });
+
   console.log(post);
+  post.save();
+
   res.status(201).json({
     message: "Post added successfully",
   });
